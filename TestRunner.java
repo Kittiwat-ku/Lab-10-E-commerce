@@ -14,7 +14,7 @@ public class TestRunner {
 
         // --- 1. Setup ---
         Product RTX5090 = new Product("P001","RTX5090",69999.0);
-        Product mouse = new Product("P002","V3pro",5000.0);
+        Product mouse = new Product("P002","Viper_V3_pro",5000.0);
         Order myOrder = new Order("ORD-001", List.of(RTX5090,mouse),"kp@gmail.com");
 
         OrderCalculator calculator = new OrderCalculator();
@@ -36,7 +36,26 @@ public class TestRunner {
 
         discountStrategy fiveHundredOff = new fixedDIscount(500);
         double priceAferFixed = calculator.calculateFinalPrice(myOrder, fiveHundredOff);
-        System.out.println("Price with 500 discount:"+ priceAferFixed);
+        System.out.println("Price with 500 THB discount:"+ priceAferFixed);
         
+        System.out.println("\n--- 3. Testing Factory and Decoration Pattern (Shipment)---");
+        Shipment standardShipment = ShipmentFactory.crateShipment("STANDARD");
+        System.out.println("Base Shipment: " + standardShipment.getInfo() + ", cost: " + standardShipment.getCost());
+
+        Shipment giftwarrped = new GiftWrapDecorator(standardShipment);
+        System.out.println("Decoration: " + giftwarrped.getInfo() + ", cost: "+giftwarrped.getCost());
+
+        Shipment fullyLoaded = new InsuranceDecorator(standardShipment, myOrder);
+        System.out.println("Fully Decoration: "+ fullyLoaded.getInfo() + ", cost: " +fullyLoaded.getCost());
+
+        System.out.println("\n--- 4. Printing Final Summary ---");
+        double finalPrice = priceAferPercentage;
+        double total = finalPrice+fullyLoaded.getCost();
+        System.out.println("Final price after discount: "+finalPrice);
+        System.out.println("Final shipment cost: "+fullyLoaded.getCost());
+        System.out.println("TOTAL TO PAY: "+total);
+
+        // --- 5. Testing Observer pattern (Processing Order) ---
+        orderProcessor.processOrder(myOrder);
     }
 }
